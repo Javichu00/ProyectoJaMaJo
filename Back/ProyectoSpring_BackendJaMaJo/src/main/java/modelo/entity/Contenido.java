@@ -1,8 +1,9 @@
-package modelo.entities;
+package modelo.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
+import modelo.enums.ClasificacionEdad;
 import modelo.enums.TipoContenido;
 
 import java.time.LocalDate;
@@ -36,5 +37,5 @@ public class Contenido {
     private LocalDate fecha;
 
     @Column(name = "clasificacion_edad")
-    private String clasificacionEdad;
+    private ClasificacionEdad clasificacionEdad;
 }
