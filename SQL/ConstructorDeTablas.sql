@@ -1,0 +1,139 @@
+CREATE DATABASE IF NOT EXISTS JAMAJO_DDBB;
+USE JAMAJO_DDBB;
+
+CREATE TABLE IF NOT EXISTS Trabajadores (
+    id_trabajador   BIGINT AUTO_INCREMENT PRIMARY KEY,
+    nombre          VARCHAR(150) NOT NULL,
+    biografia       TEXT
+);
+
+CREATE TABLE IF NOT EXISTS Categoria (
+    nombreCategoria VARCHAR(100) PRIMARY KEY
+);
+
+CREATE TABLE IF NOT EXISTS Usuarios (
+    email           VARCHAR(255) PRIMARY KEY,
+    username        VARCHAR(100) NOT NULL UNIQUE,
+    password        VARCHAR(255) NOT NULL,
+    fecha_registro  DATE         NOT NULL,
+    tipo_usuario    ENUM('ADMIN', 'ESTANDAR') NOT NULL DEFAULT 'ESTANDAR',
+    enabled         BOOLEAN      NOT NULL DEFAULT TRUE
+);
+
+CREATE TABLE IF NOT EXISTS Contenido (
+    id_contenido        BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id_director         BIGINT,
+    tipo_contenido      ENUM('PELICULA', 'SERIE') NOT NULL,
+    descripcion         TEXT,
+    fecha               DATE,
+    clasificacion_edad  VARCHAR(10),
+    CONSTRAINT fk_contenido_director FOREIGN KEY (id_director)
+        REFERENCES Trabajadores(id_trabajador)
+        ON DELETE SET NULL
+);
+
+CREATE TABLE IF NOT EXISTS Pelicula (
+    id_contenido    BIGINT PRIMARY KEY,
+    duracion        INT NOT NULL COMMENT 'Duración en minutos',
+    CONSTRAINT fk_pelicula_contenido FOREIGN KEY (id_contenido)
+        REFERENCES Contenido(id_contenido)
+        ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS Serie (
+    id_serie        BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id_contenido    BIGINT NOT NULL UNIQUE,
+    CONSTRAINT fk_serie_contenido FOREIGN KEY (id_contenido)
+        REFERENCES Contenido(id_contenido)
+        ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS Temporada (
+    id_temporada        BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id_serie            BIGINT NOT NULL,
+    numero_temporada    INT    NOT NULL,
+    CONSTRAINT fk_temporada_serie FOREIGN KEY (id_serie)
+        REFERENCES Serie(id_serie)
+        ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS Episodio (
+    id_episodio     BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id_temporada    BIGINT NOT NULL,
+    duracion        INT    NOT NULL COMMENT 'Duración en minutos',
+    descripcion     TEXT,
+    CONSTRAINT fk_episodio_temporada FOREIGN KEY (id_temporada)
+        REFERENCES Temporada(id_temporada)
+        ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS ActorParticipa (
+    id_relacion     BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id_contenido    BIGINT       NOT NULL,
+    id_trabajador   BIGINT       NOT NULL,
+    rolEnContenido  VARCHAR(100) NOT NULL,
+    CONSTRAINT fk_ap_contenido   FOREIGN KEY (id_contenido)
+        REFERENCES Contenido(id_contenido) ON DELETE CASCADE,
+    CONSTRAINT fk_ap_trabajador  FOREIGN KEY (id_trabajador)
+        REFERENCES Trabajadores(id_trabajador) ON DELETE CASCADE,
+    CONSTRAINT uq_ap UNIQUE (id_contenido, id_trabajador, rolEnContenido)
+);
+
+CREATE TABLE IF NOT EXISTS ContenidoPerteneceACat (
+    id_relacion     BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id_contenido    BIGINT       NOT NULL,
+    nombreCategoria VARCHAR(100) NOT NULL,
+    CONSTRAINT fk_cpc_contenido  FOREIGN KEY (id_contenido)
+        REFERENCES Contenido(id_contenido) ON DELETE CASCADE,
+    CONSTRAINT fk_cpc_categoria  FOREIGN KEY (nombreCategoria)
+        REFERENCES Categoria(nombreCategoria) ON DELETE CASCADE,
+    CONSTRAINT uq_cpc UNIQUE (id_contenido, nombreCategoria)
+);
+
+CREATE TABLE IF NOT EXISTS Lista (
+    id_lista    BIGINT AUTO_INCREMENT PRIMARY KEY,
+    email       VARCHAR(255) NOT NULL,
+    nombre      VARCHAR(150) NOT NULL,
+    CONSTRAINT fk_lista_usuario FOREIGN KEY (email)
+        REFERENCES Usuarios(email)
+        ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS ListaTieneContenido (
+    id_ltc          BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id_lista        BIGINT NOT NULL,
+    id_contenido    BIGINT NOT NULL,
+    CONSTRAINT fk_ltc_lista     FOREIGN KEY (id_lista)
+        REFERENCES Lista(id_lista) ON DELETE CASCADE,
+    CONSTRAINT fk_ltc_contenido FOREIGN KEY (id_contenido)
+        REFERENCES Contenido(id_contenido) ON DELETE CASCADE,
+    CONSTRAINT uq_ltc UNIQUE (id_lista, id_contenido)
+);
+
+CREATE TABLE IF NOT EXISTS Resena (
+    id_comentario       BIGINT AUTO_INCREMENT PRIMARY KEY,
+    email               VARCHAR(255) NOT NULL,
+    id_contenido        BIGINT       NOT NULL,
+    texto               TEXT         NOT NULL,
+    fecha_publicacion   DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    cant_estrellas      TINYINT      NOT NULL CHECK (cant_estrellas BETWEEN 1 AND 5),
+    CONSTRAINT fk_resena_usuario   FOREIGN KEY (email)
+        REFERENCES Usuarios(email) ON DELETE CASCADE,
+    CONSTRAINT fk_resena_contenido FOREIGN KEY (id_contenido)
+        REFERENCES Contenido(id_contenido) ON DELETE CASCADE,
+    CONSTRAINT uq_resena UNIQUE (email, id_contenido)
+);
+
+CREATE TABLE IF NOT EXISTS Transaccion (
+    id_transaccion      BIGINT AUTO_INCREMENT PRIMARY KEY,
+    email               VARCHAR(255)  NOT NULL,
+    id_contenido        BIGINT        NOT NULL,
+    tipo                ENUM('ALQUILER', 'COMPRA') NOT NULL,
+    precio              DECIMAL(6,2)  NOT NULL,
+    fecha_transaccion   DATETIME      NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    fecha_expiracion    DATETIME      NULL COMMENT 'Solo para alquileres',
+    CONSTRAINT fk_trans_usuario   FOREIGN KEY (email)
+        REFERENCES Usuarios(email) ON DELETE CASCADE,
+    CONSTRAINT fk_trans_contenido FOREIGN KEY (id_contenido)
+        REFERENCES Contenido(id_contenido) ON DELETE CASCADE
+);
