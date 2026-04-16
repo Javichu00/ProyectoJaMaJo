@@ -1,79 +1,115 @@
-import { useState } from "react";
+import { useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
 import './Navbar.css'
 
-function Navbar() {
-    const isLoggedIn = false;
-
-  return (
-    <nav className="navbar navbar-expand-lg navbar-dark bg-dark px-3">
-      
-      {/* Logo + Nombre */}
-      <a className="navbar-brand d-flex align-items-center" href="#">
-        <img
-          src="TU_LOGO_AQUI"
-          alt="logo"
-          width="30"
-          height="30"
-          className="me-2"
-        />
-        <span>NombreProyecto</span>
-      </a>
-
-      {/* Botón hamburguesa */}
-      <button
-        className="navbar-toggler"
-        type="button"
-        onClick={() => setMenuOpen(!menuOpen)}
-      >
-        <span className="navbar-toggler-icon"></span>
-      </button>
-
-      <div className={`collapse navbar-collapse ${menuOpen ? "show" : ""}`}>
-        
-        {/* Menú izquierda */}
-        <ul className="navbar-nav me-auto">
-          <li className="nav-item dropdown">
-            <button
-              className="nav-link dropdown-toggle btn btn-link text-light"
-              onClick={() => setMenuOpen(!menuOpen)}
-            >
-              Series
-            </button>
-
-            <ul className={`dropdown-menu ${menuOpen ? "show" : ""}`}>
-              <li><a className="dropdown-item" href="#">Acción</a></li>
-              <li><a className="dropdown-item" href="#">Drama</a></li>
-              <li><a className="dropdown-item" href="#">Comedia</a></li>
-            </ul>
-          </li>
-        </ul>
-
-        {/* Derecha */}
-        <div className="d-flex align-items-center gap-2">
-          
-          {/* Listas usuario */}
-          <button className="btn btn-outline-light">
-            Mis listas
-          </button>
-
-          {/* Login / Perfil */}
-          {!isLoggedIn ? (
-            <button className="btn btn-primary">
-              Iniciar sesión
-            </button>
-          ) : (
-            <div
-              className="rounded-circle bg-light text-dark d-flex justify-content-center align-items-center"
-              style={{ width: "40px", height: "40px", cursor: "pointer" }}
-            >
-              U
-            </div>
-          )}
-        </div>
-
-      </div>
-    </nav>
-  );
+// Simula autenticación — reemplaza con tu contexto/estado real
+const useAuth = () => {
+  const [isLoggedIn] = useState(false) // cambia a true para probar sesión activa
+  return { isLoggedIn }
 }
 
-export default Navbar;
+const seriesCategories = ['Comedia', 'Acción', 'Terror', 'Drama', 'Sci-Fi', 'Documental']
+const peliculasCategories = ['Comedia', 'Acción', 'Terror', 'Drama', 'Animación', 'Thriller']
+
+export default function Navbar() {
+  const { isLoggedIn } = useAuth()
+  const navigate = useNavigate()
+  const [activeDropdown, setActiveDropdown] = useState<string | null>(null)
+
+  const handleAcceder = () => {
+    if (isLoggedIn) {
+      navigate('/perfil')
+    } else {
+      navigate('/acceder')
+    }
+  }
+
+  return (
+    <nav className="navbar">
+      {/* Logo */}
+      <Link to="/" className="navbar__logo">
+        {/* Coloca aquí tu imagen: <img src="/logo.png" alt="Logo" /> */}
+        <div className="navbar__logo-placeholder">LOGO</div>
+      </Link>
+
+      {/* Links principales */}
+      <ul className="navbar__links">
+        <li>
+          <Link to="/" className="navbar__link">Inicio</Link>
+        </li>
+
+        {/* Series */}
+        <li
+          className="navbar__item--dropdown"
+          onMouseEnter={() => setActiveDropdown('series')}
+          onMouseLeave={() => setActiveDropdown(null)}
+        >
+          <span className="navbar__link navbar__link--arrow">
+            Series <span className="navbar__arrow">▾</span>
+          </span>
+          {activeDropdown === 'series' && (
+            <div className="navbar__dropdown">
+              <div className="navbar__dropdown-section">
+                <span className="navbar__dropdown-title">Categorías</span>
+                <ul>
+                  {seriesCategories.map(cat => (
+                    <li key={cat}>
+                      <Link to={`/series/categoria/${cat.toLowerCase()}`} className="navbar__dropdown-link">
+                        {cat}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div className="navbar__dropdown-divider" />
+              <Link to="/series/nuevo" className="navbar__dropdown-link navbar__dropdown-link--section">Nuevo</Link>
+              <Link to="/series/popular" className="navbar__dropdown-link navbar__dropdown-link--section">Popular</Link>
+            </div>
+          )}
+        </li>
+
+        {/* Películas */}
+        <li
+          className="navbar__item--dropdown"
+          onMouseEnter={() => setActiveDropdown('peliculas')}
+          onMouseLeave={() => setActiveDropdown(null)}
+        >
+          <span className="navbar__link navbar__link--arrow">
+            Películas <span className="navbar__arrow">▾</span>
+          </span>
+          {activeDropdown === 'peliculas' && (
+            <div className="navbar__dropdown">
+              <div className="navbar__dropdown-section">
+                <span className="navbar__dropdown-title">Categorías</span>
+                <ul>
+                  {peliculasCategories.map(cat => (
+                    <li key={cat}>
+                      <Link to={`/peliculas/categoria/${cat.toLowerCase()}`} className="navbar__dropdown-link">
+                        {cat}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div className="navbar__dropdown-divider" />
+              <Link to="/peliculas/nuevo" className="navbar__dropdown-link navbar__dropdown-link--section">Nuevo</Link>
+              <Link to="/peliculas/popular" className="navbar__dropdown-link navbar__dropdown-link--section">Popular</Link>
+            </div>
+          )}
+        </li>
+
+        {/* Mis Listas — solo si hay sesión */}
+        {isLoggedIn && (
+          <li>
+            <Link to="/mis-listas" className="navbar__link">Mis Listas</Link>
+          </li>
+        )}
+      </ul>
+
+      {/* Botón Acceder / Perfil */}
+      <button className="navbar__acceder" onClick={handleAcceder}>
+        {isLoggedIn ? 'Mi Perfil' : 'Acceder'}
+      </button>
+    </nav>
+  )
+}

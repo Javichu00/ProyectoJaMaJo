@@ -1,8 +1,6 @@
 package modelo.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import lombok.*;
 import modelo.enums.ClasificacionEdad;
 import modelo.enums.TipoContenido;
 
@@ -11,11 +9,6 @@ import java.time.LocalDate;
 @Entity
 @Table(name = "contenido")
 @Inheritance(strategy = InheritanceType.JOINED)
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
 public class Contenido {
 
     @Id
@@ -36,6 +29,69 @@ public class Contenido {
 
     private LocalDate fecha;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "clasificacion_edad")
     private ClasificacionEdad clasificacionEdad;
+
+    public Contenido() {
+    }
+
+    public Contenido(Long id, Trabajador director, TipoContenido tipoContenido,
+                     String descripcion, LocalDate fecha,
+                     ClasificacionEdad clasificacionEdad) {
+        this.id = id;
+        this.director = director;
+        this.tipoContenido = tipoContenido;
+        this.descripcion = descripcion;
+        this.fecha = fecha;
+        this.clasificacionEdad = clasificacionEdad;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Trabajador getDirector() {
+        return director;
+    }
+
+    public void setDirector(Trabajador director) {
+        this.director = director;
+    }
+
+    public TipoContenido getTipoContenido() {
+        return tipoContenido;
+    }
+
+    public void setTipoContenido(TipoContenido tipoContenido) {
+        this.tipoContenido = tipoContenido;
+    }
+
+    public String getDescripcion() {
+        return descripcion;
+    }
+
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
+    }
+
+    public LocalDate getFecha() {
+        return fecha;
+    }
+
+    public void setFecha(LocalDate fecha) {
+        this.fecha = fecha;
+    }
+
+    public ClasificacionEdad getClasificacionEdad() {
+        return clasificacionEdad;
+    }
+
+    public void setClasificacionEdad(ClasificacionEdad clasificacionEdad) {
+        this.clasificacionEdad = clasificacionEdad;
+    }
 }

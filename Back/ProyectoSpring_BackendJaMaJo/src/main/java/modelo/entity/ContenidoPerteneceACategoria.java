@@ -1,14 +1,9 @@
 package modelo.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
 
 @Entity
 @Table(name = "contenido_categoria")
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
 public class ContenidoPerteneceACategoria {
 
     @Id
@@ -22,4 +17,37 @@ public class ContenidoPerteneceACategoria {
     @ManyToOne
     @JoinColumn(name = "nombre_categoria", nullable = false)
     private Categoria categoria;
+
+    public ContenidoPerteneceACategoria() {
+    }
+
+    public ContenidoPerteneceACategoria(Long id, Contenido contenido, Categoria categoria) {
+        this.id = id;
+        this.contenido = contenido;
+        this.categoria = categoria;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Contenido getContenido() {
+        return contenido;
+    }
+
+    public void setContenido(Contenido contenido) {
+        this.contenido = contenido;
+    }
+
+    public Categoria getCategoria() {
+        return categoria;
+    }
+
+    public void setCategoria(Categoria categoria) {
+        this.categoria = categoria;
+    }
 }

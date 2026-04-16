@@ -1,17 +1,27 @@
 package modelo.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
 
 @Entity
 @Table(name = "categoria")
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
 public class Categoria {
 
     @Id
     @Column(name = "nombre_categoria")
     private String nombreCategoria;
+
+    public Categoria() {
+    }
+
+    public Categoria(String nombreCategoria) {
+        this.nombreCategoria = nombreCategoria;
+    }
+
+    public String getNombreCategoria() {
+        return nombreCategoria;
+    }
+
+    public void setNombreCategoria(String nombreCategoria) {
+        this.nombreCategoria = nombreCategoria;
+    }
 }
