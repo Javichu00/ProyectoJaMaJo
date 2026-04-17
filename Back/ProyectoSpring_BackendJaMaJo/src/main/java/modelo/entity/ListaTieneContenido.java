@@ -1,14 +1,9 @@
 package modelo.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
 
 @Entity
 @Table(name = "lista_contenido")
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
 public class ListaTieneContenido {
 
     @Id
@@ -22,4 +17,37 @@ public class ListaTieneContenido {
     @ManyToOne
     @JoinColumn(name = "id_contenido", nullable = false)
     private Contenido contenido;
+
+    public ListaTieneContenido() {
+    }
+
+    public ListaTieneContenido(Long id, Lista lista, Contenido contenido) {
+        this.id = id;
+        this.lista = lista;
+        this.contenido = contenido;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Lista getLista() {
+        return lista;
+    }
+
+    public void setLista(Lista lista) {
+        this.lista = lista;
+    }
+
+    public Contenido getContenido() {
+        return contenido;
+    }
+
+    public void setContenido(Contenido contenido) {
+        this.contenido = contenido;
+    }
 }

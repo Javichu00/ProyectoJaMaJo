@@ -1,14 +1,9 @@
 package modelo.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
 
 @Entity
 @Table(name = "temporada")
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
 public class Temporada {
 
     @Id
@@ -22,4 +17,37 @@ public class Temporada {
 
     @Column(name = "numero_temporada", nullable = false)
     private Integer numeroTemporada;
+
+    public Temporada() {
+    }
+
+    public Temporada(Long id, Serie serie, Integer numeroTemporada) {
+        this.id = id;
+        this.serie = serie;
+        this.numeroTemporada = numeroTemporada;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Serie getSerie() {
+        return serie;
+    }
+
+    public void setSerie(Serie serie) {
+        this.serie = serie;
+    }
+
+    public Integer getNumeroTemporada() {
+        return numeroTemporada;
+    }
+
+    public void setNumeroTemporada(Integer numeroTemporada) {
+        this.numeroTemporada = numeroTemporada;
+    }
 }
