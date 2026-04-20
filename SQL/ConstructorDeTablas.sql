@@ -2,7 +2,7 @@ CREATE DATABASE IF NOT EXISTS JAMAJO_DDBB;
 USE JAMAJO_DDBB;
 
 CREATE TABLE IF NOT EXISTS Trabajadores (
-    id_trabajador   INT AUTO_INCREMENT PRIMARY KEY,
+    id_trabajador   BIGINT AUTO_INCREMENT PRIMARY KEY,
     nombre          VARCHAR(150) NOT NULL,
     biografia       TEXT
 );
@@ -38,8 +38,8 @@ CREATE TABLE IF NOT EXISTS Usuarios (
 );
 
 CREATE TABLE IF NOT EXISTS Contenido (
-    id_contenido        INT AUTO_INCREMENT PRIMARY KEY,
-    id_director         INT,
+    id_contenido        BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id_director         BIGINT,
     tipo_contenido      ENUM('PELICULA', 'SERIE') NOT NULL,
     descripcion         TEXT,
     fecha               DATE,
@@ -51,17 +51,45 @@ CREATE TABLE IF NOT EXISTS Contenido (
 );
 
 CREATE TABLE IF NOT EXISTS Pelicula (
-    id_contenido    INT PRIMARY KEY,
+    id_contenido    BIGINT PRIMARY KEY,
     duracion        INT NOT NULL,
     CONSTRAINT fk_pelicula_contenido
         FOREIGN KEY (id_contenido)
         REFERENCES Contenido(id_contenido)
         ON DELETE CASCADE
 );
+-- ______________________
+-- PELICULA DE PRUEBA!!!
+-- __________________________
+
+INSERT INTO Trabajadores (nombre, biografia)
+VALUES ('Director prueba', 'Bio de prueba');
+
+INSERT INTO Contenido (
+    id_director,
+    tipo_contenido,
+    descripcion,
+    fecha,
+    clasificacion_edad
+) VALUES (
+    1,
+    'PELICULA',
+    'Película de prueba',
+    '2024-01-01',
+    'TP'
+);
+
+INSERT INTO Pelicula (
+    id_contenido,
+    duracion
+) VALUES (
+    LAST_INSERT_ID(),
+    120
+);
 
 CREATE TABLE IF NOT EXISTS Serie (
-    id_serie        INT AUTO_INCREMENT PRIMARY KEY,
-    id_contenido    INT NOT NULL UNIQUE,
+    id_serie        BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id_contenido    BIGINT NOT NULL UNIQUE,
     CONSTRAINT fk_serie_contenido
         FOREIGN KEY (id_contenido)
         REFERENCES Contenido(id_contenido)
@@ -69,8 +97,8 @@ CREATE TABLE IF NOT EXISTS Serie (
 );
 
 CREATE TABLE IF NOT EXISTS Temporada (
-    id_temporada        INT AUTO_INCREMENT PRIMARY KEY,
-    id_serie            INT NOT NULL,
+    id_temporada        BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id_serie            BIGINT NOT NULL,
     numero_temporada    INT NOT NULL,
     CONSTRAINT fk_temporada_serie
         FOREIGN KEY (id_serie)
@@ -79,8 +107,8 @@ CREATE TABLE IF NOT EXISTS Temporada (
 );
 
 CREATE TABLE IF NOT EXISTS Episodio (
-    id_episodio     INT AUTO_INCREMENT PRIMARY KEY,
-    id_temporada    INT NOT NULL,
+    id_episodio     BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id_temporada    BIGINT NOT NULL,
     duracion        INT NOT NULL,
     CONSTRAINT fk_episodio_temporada
         FOREIGN KEY (id_temporada)
@@ -89,9 +117,9 @@ CREATE TABLE IF NOT EXISTS Episodio (
 );
 
 CREATE TABLE IF NOT EXISTS ActorParticipa (
-    id_relacion     INT AUTO_INCREMENT PRIMARY KEY,
-    id_contenido    INT NOT NULL,
-    id_trabajador   INT NOT NULL,
+    id_relacion     BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id_contenido    BIGINT NOT NULL,
+    id_trabajador   BIGINT NOT NULL,
     rolEnContenido  VARCHAR(100) NOT NULL,
 
     CONSTRAINT fk_ap_contenido
@@ -108,8 +136,8 @@ CREATE TABLE IF NOT EXISTS ActorParticipa (
 );
 
 CREATE TABLE IF NOT EXISTS ContenidoPerteneceACategoria (
-    id_relacion     INT AUTO_INCREMENT PRIMARY KEY,
-    id_contenido    INT NOT NULL,
+    id_relacion     BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id_contenido    BIGINT NOT NULL,
     nombreCategoria VARCHAR(100) NOT NULL,
 
     CONSTRAINT fk_cpc_contenido
@@ -126,7 +154,7 @@ CREATE TABLE IF NOT EXISTS ContenidoPerteneceACategoria (
 );
 
 CREATE TABLE IF NOT EXISTS Lista (
-    id_lista    INT AUTO_INCREMENT PRIMARY KEY,
+    id_lista    BIGINT AUTO_INCREMENT PRIMARY KEY,
     email       VARCHAR(255) NOT NULL,
     nombre      VARCHAR(150) NOT NULL,
 
@@ -137,9 +165,9 @@ CREATE TABLE IF NOT EXISTS Lista (
 );
 
 CREATE TABLE IF NOT EXISTS ListaTieneContenido (
-    id_ltc          INT AUTO_INCREMENT PRIMARY KEY,
-    id_lista        INT NOT NULL,
-    id_contenido    INT NOT NULL,
+    id_ltc          BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id_lista        BIGINT NOT NULL,
+    id_contenido    BIGINT NOT NULL,
 
     CONSTRAINT fk_ltc_lista
         FOREIGN KEY (id_lista)
@@ -155,9 +183,9 @@ CREATE TABLE IF NOT EXISTS ListaTieneContenido (
 );
 
 CREATE TABLE IF NOT EXISTS Resena (
-    id_comentario       INT AUTO_INCREMENT PRIMARY KEY,
+    id_comentario       BIGINT AUTO_INCREMENT PRIMARY KEY,
     email               VARCHAR(255) NOT NULL,
-    id_contenido        INT NOT NULL,
+    id_contenido        BIGINT NOT NULL,
     texto               TEXT NOT NULL,
     fecha_publicacion   DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     cant_estrellas      TINYINT NOT NULL CHECK (cant_estrellas BETWEEN 0 AND 5),
