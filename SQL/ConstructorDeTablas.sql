@@ -58,30 +58,6 @@ CREATE TABLE IF NOT EXISTS Pelicula (
         REFERENCES Contenido(id_contenido)
         ON DELETE CASCADE
 );
--- ______________________
--- PELICULA DE PRUEBA!!!
--- __________________________
-INSERT INTO Contenido (
-    id_director,
-    tipo_contenido,
-    descripcion,
-    fecha,
-    clasificacion_edad
-) VALUES (
-    1,
-    'PELICULA',
-    'Película de prueba',
-    '2024-01-01',
-    'TP'
-);
-
-INSERT INTO Pelicula (
-    id_contenido,
-    duracion
-) VALUES (
-    LAST_INSERT_ID(),
-    120
-);
 
 CREATE TABLE IF NOT EXISTS Serie (
     id_serie        INT AUTO_INCREMENT PRIMARY KEY,
